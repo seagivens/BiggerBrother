@@ -544,7 +544,7 @@ end
 
 local function RegisterOnEnable(self)
 	if IsAddOnLoaded("Blizzard_TimeManager") then -- HACK
-	   -- oscarucb: this code path handles dynamic loading of LibAce2 AFTER PLAYER_LOGIN has fired, 
+	   -- oscarucb: this code path handles dynamic loading of LibAce2 AFTER PLAYER_LOGIN has fired,
 	   -- so that we will NEVER see the event. This ensures late-registering addons still get their OnEnable()
 		AceAddon.playerLoginFired = true
 	end
@@ -673,7 +673,7 @@ function AceAddon:InitializeAddon(addon, name)
 	if AceEvent then
 		AceEvent:TriggerEvent("Ace2_AddonInitialized", addon)
 	end
-    --DEFAULT_CHAT_FRAME:AddMessage("AceAddon Initialized: "..name) 
+    --DEFAULT_CHAT_FRAME:AddMessage("AceAddon Initialized: "..name)
 	RegisterOnEnable(addon)
 	local n2 = AceAddon.addonsToOnEnable and #AceAddon.addonsToOnEnable or 0
 	if n2 - n > 1 then
@@ -684,7 +684,7 @@ end
 
 local aboutFrame
 local function createAboutFrame()
-	aboutFrame = CreateFrame("Frame", "AceAddon20AboutFrame", UIParent, "DialogBoxFrame")
+	aboutFrame = CreateFrame("Frame", "AceAddon20AboutFrame", UIParent, "DialogBoxFrame", BackdropTemplateMixin and "BackdropTemplate")
 	aboutFrame:SetWidth(500)
 	aboutFrame:SetHeight(400)
 	aboutFrame:SetPoint("CENTER")
@@ -845,7 +845,7 @@ function AceAddon.prototype:PrintAddonInfo()
 end
 
 local function createDonateFrame()
-	donateFrame = CreateFrame("Frame", "AceAddon20Frame", UIParent, "DialogBoxFrame")
+	donateFrame = CreateFrame("Frame", "AceAddon20Frame", UIParent, "DialogBoxFrame", BackdropTemplateMixin and "BackdropTemplate")
 
 	donateFrame:SetWidth(500)
 	donateFrame:SetHeight(200)
