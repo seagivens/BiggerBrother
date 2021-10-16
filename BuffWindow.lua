@@ -13,7 +13,7 @@ local spellidmin = 1000 -- minimum allowed spellid in this addon (bfa is > 25000
 local foodmin = 20 -- minimum food stat level to allow
 
 local BarHeight=18
-local BarWidth=250
+local BarWidth=300
 local WindowWidth=BarWidth+32
 local TotalBuffs=11
 local PlayersShown=8
