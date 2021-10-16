@@ -12,7 +12,10 @@ vars.SpellData.foods = {
 	45619, -- Well Fed +8 resist
 	33257, -- Well Fed +30 stam
 	33254, -- Well Fed +20 stam
+	35272, -- Well Fed +20 stam
 	40323, -- Well Fed +20 str
+	33256, -- Well Fed +20 str
+	27658, -- Well Fed +20 str
 	33259, -- Well Fed +40 AP
 	43764, -- Well Fed +20 Hit Rating
 	33265, -- Well Fed +8 mp5
@@ -39,7 +42,7 @@ vars.SpellData.CombatBuffSplit = {
 }
 
 vars.SpellData.CombatBuffs = {
-	1126, -- Mark of the Wild
+	21849, -- Mark of the Wild
   1459,  -- Arcane Intellect
 	21562, -- Power Word: Fortitude
 	6673,  -- Battle Shout
@@ -52,6 +55,11 @@ vars.SpellData.PaladinBuffs = {
 	1038,		-- Blessing of Salvation
 	20911, 	-- Greater Blessing of Sanctuary
 	25899, 	-- Blessing of Sanctuary
+	27142,  -- Blessing of Wisdom
+	27143,  -- Greater Blessing of Wisdom
+	27140,  -- Blessing of Might
+	27141,  -- Greater Blessing of Might
+
 }
 
 vars.SpellData.flasks = {
@@ -114,8 +122,8 @@ vars.SpellData.elixirBattle = {
 	33726, -- 33726 Elixir of Mastery
 	38954, -- 38954 Fel Strength Elixir
 	45373, -- 45373 Bloodberry
-	54452, -- 54452 Adept's Elixir
-	54494, -- 54494 Major Agility
+	33740, -- 54452 Adept's Elixir
+	28497, -- 54494 Major Agility
 	}
 
 vars.SpellData.ccspells = {

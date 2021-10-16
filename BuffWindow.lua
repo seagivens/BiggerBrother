@@ -8,14 +8,14 @@ local GetSpellInfo, UnitBuff, UnitIsConnected, UnitIsDeadOrGhost =
       GetSpellInfo, UnitBuff, UnitIsConnected, UnitIsDeadOrGhost
 
 -- Change here and in BigBrother.lua
-local spellidmin = 10000 -- minimum allowed spellid in this addon (bfa is > 250000)
+local spellidmin = 1000 -- minimum allowed spellid in this addon (bfa is > 250000)
 
 local foodmin = 20 -- minimum food stat level to allow
 
 local BarHeight=18
 local BarWidth=250
 local WindowWidth=BarWidth+32
-local TotalBuffs=7
+local TotalBuffs=11
 local PlayersShown=8
 local RowsCreated=PlayersShown+1
 local BuffSpacing=18
@@ -80,6 +80,11 @@ end
 vars.CombatBuffs = {}
 for _,v in ipairs(vars.SpellData.CombatBuffs) do
 	table.insert( vars.CombatBuffs, { spellData(v) } )
+end
+
+vars.PaladinBuffs = {}
+for _,v in ipairs(vars.SpellData.PaladinBuffs) do
+	table.insert( vars.PaladinBuffs, { spellData(v) } )
 end
 
 vars.Foodbuffs={}
@@ -194,12 +199,12 @@ end
 
 local BigBrother_BuffTable={
 	{
-		name=L["Consumables"],
+		name=L["Raid Buffs"],
 		sortFunc=Sort_RaidBuffs,
 		buffs={
       {
-        {BTspell(DR,1126)}, -- Mark of the Wild
         {BTspell(DR,21849)}, -- Gift of the Wild
+        {BTspell(DR,1126)}, -- Mark of the Wild
       },
 			{
 			  -- stamina 10%
@@ -208,8 +213,8 @@ local BigBrother_BuffTable={
 			},
 			{
 			   -- int 10%
+         {BTspell(MA,23028)},   -- Arcane Brilliance (rank 1)
 			   {BTspell(MA,1459)}, 		-- Arcane Intellect
-			   {BTspell(MA,23028)},   -- Arcane Brilliance (rank 1)
 			},
 			{
 			   -- Pally Kings
@@ -223,12 +228,16 @@ local BigBrother_BuffTable={
 			},
       {
 			   -- Pally Other
+			   {BTspell(PA,27143)}, 		-- Greater Blessing of Wisdom
+			   {BTspell(PA,27142)}, 		-- Blessing of Wisdom
+			   {BTspell(PA,27141)}, 		-- Greater Blessing of Might
+			   {BTspell(PA,27140)}, 		-- Blessing of Might
 			   {BTspell(PA,20911)}, 		-- Greater Blessing of Sanctuary
 			   {BTspell(PA,25899)}, 		-- Blessing of Sanctuary
 			},
-			-- vars.Elixirs_Battle,
-			-- vars.Elixirs_Guardian,
-			-- {}, {},
+      {},
+			vars.Elixirs_Battle,
+			vars.Elixirs_Guardian,
 			vars.Flasks,
       vars.Foodbuffs,
 		},
@@ -236,11 +245,13 @@ local BigBrother_BuffTable={
       STAT_MARK,      -- "Mark of the Wild"
 			STAT_STAMINA, 	-- "Stamina"
 			STAT_INTELLECT, -- "Intellect"
-			STAT_STR_AGI, 	-- "Str/Agi";
-			-- {}, {},
-			-- {headerColor(L["Battle Elixirs"]),   select(2,spellData(60344))},
-			-- {headerColor(L["Guardian Elixirs"]), select(2,spellData(54494))},
-			{headerColor(L["Flasks"]),           select(2,spellData(67019))},
+			STAT_KINGS, 	-- "Str/Agi"
+      STAT_SALV,
+      STAT_WIS,
+			 {},
+			{headerColor(L["Battle Elixirs"]),   select(2,spellData(28497))},
+			{headerColor(L["Guardian Elixirs"]), select(2,spellData(39625))},
+			{headerColor(L["Flasks"]),           select(2,spellData(28518))},
 			{headerColor(spellData(33263)),      select(2,spellData(33263))},
 		}
 	},

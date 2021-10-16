@@ -21,7 +21,7 @@ else
 end
 
 -- Change here and in BigBrother.lua
-local spellidmin = 10000 -- minimum allowed spellid in this addon (bfa: 250000)
+local spellidmin = 1000 -- minimum allowed spellid in this addon (bfa: 250000)
 
 BigBrother.debug = true
 
