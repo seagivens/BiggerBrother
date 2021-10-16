@@ -1,7 +1,7 @@
 --[[
 BigBrother
 Concept and original mod: Cryect
-Currently maintained by: JackXC
+Currently maintained by: Eilaura - Bloodsail Buccaneers US
 Additional thanks:
 * All of the translators
 * Other wowace developers for assistance and bug fixes
@@ -10,6 +10,7 @@ Additional thanks:
 * Thanks to pastamancer for fixing the issues with Supreme Power Flasks and pointing in right direction for others
 * Window Resizing code based off the dragbar from violation
 * And also thanks to all those in #wowace for the various suggestions
+* JackXC who had the previous most updated version
 ]]
 local addonName, vars = ...
 local L = vars.L
@@ -20,9 +21,9 @@ else
 end
 
 -- Change here and in BigBrother.lua
-local spellidmin = 250000 -- minimum allowed spellid in this addon (bfa: 250000)
+local spellidmin = 1000 -- minimum allowed spellid in this addon (bfa: 250000)
 
--- BigBrother.debug = true
+BigBrother.debug = true
 
 local addon = BigBrother
 local profile
@@ -854,7 +855,7 @@ function addon:ConsumableCheck(Where, Full)
     end
 
     -- Fill up the food and flask lists with the raid roster names
-    -- We wil remove those that are "ok" later
+    -- We will remove those that are "ok" later
     for unit in RL:IterateRoster(false) do
         if self.db.profile.Groups[unit.subgroup] then
             table.insert(MissingFlaskList, unit.name)

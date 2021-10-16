@@ -8,14 +8,14 @@ local GetSpellInfo, UnitBuff, UnitIsConnected, UnitIsDeadOrGhost =
       GetSpellInfo, UnitBuff, UnitIsConnected, UnitIsDeadOrGhost
 
 -- Change here and in BigBrother.lua
-local spellidmin = 250000 -- minimum allowed spellid in this addon (bfa is > 250000)
+local spellidmin = 1000 -- minimum allowed spellid in this addon (bfa is > 250000)
 
-local foodmin = 40 -- minimum food stat level to allow
+local foodmin = 20 -- minimum food stat level to allow
 
 local BarHeight=18
-local BarWidth=250
+local BarWidth=300
 local WindowWidth=BarWidth+32
-local TotalBuffs=7
+local TotalBuffs=11
 local PlayersShown=8
 local RowsCreated=PlayersShown+1
 local BuffSpacing=18
@@ -52,8 +52,7 @@ end
 --[[ Load up local tables from master spell ID tables ]]
 
 local function currentFlixir(spellID)
-  -- return spellID >= 79000 and spellID < 93000 -- cata
-  return spellID >= 105600
+  return spellID >= 17000
 end
 
 vars.Flasks = {}
@@ -78,19 +77,14 @@ for i,v in ipairs(vars.Elixirs_Guardian) do
 	table.insert( vars.Elixirs, v )
 end
 
-vars.AugmentRunes = {}
-for _,v in ipairs(vars.SpellData.AugmentRunes) do
-	table.insert( vars.AugmentRunes, { spellData(v) } )
-end
-
-vars.VantusRunes = {}
-for _,v in ipairs(vars.SpellData.VantusRunes) do
-	table.insert( vars.VantusRunes, { spellData(v) } )
-end
-
 vars.CombatBuffs = {}
 for _,v in ipairs(vars.SpellData.CombatBuffs) do
 	table.insert( vars.CombatBuffs, { spellData(v) } )
+end
+
+vars.PaladinBuffs = {}
+for _,v in ipairs(vars.SpellData.PaladinBuffs) do
+	table.insert( vars.PaladinBuffs, { spellData(v) } )
 end
 
 vars.Foodbuffs={}
@@ -114,6 +108,7 @@ local function scanfood(spellid)
   for v in string.gmatch(line, "%d+") do  -- assume largest number in tooltip is the statval
      statval = math.max(statval,tonumber(v))
   end
+
   --if statval >= 100 and string.find(line, ITEM_MOD_STAMINA_SHORT) then -- normalize for MoP stam bonus
     --  statval = statval * 300 / 450
   --end
@@ -204,41 +199,60 @@ end
 
 local BigBrother_BuffTable={
 	{
-		name=L["Consumables"],
+		name=L["Raid Buffs"],
 		sortFunc=Sort_RaidBuffs,
 		buffs={
-			{ 
+      {
+        {BTspell(DR,21849)}, -- Gift of the Wild
+        {BTspell(DR,1126)}, -- Mark of the Wild
+      },
+			{
 			  -- stamina 10%
-			   {BTspell(PR,21562)},		-- Power Word: Fortitude
-			}, 
+			   {BTspell(PR,21562)},	-- Prayer of Fortitude
+			   {BTspell(PR,1243)},	-- Power Word: Fortitude
+			},
 			{
 			   -- int 10%
+         {BTspell(MA,23028)},   -- Arcane Brilliance (rank 1)
 			   {BTspell(MA,1459)}, 		-- Arcane Intellect
-			   -- {BTspell(MA,61316)}, 	-- Dalaran Brilliance
 			},
-			{ 
-			   -- str/agi 10%
-			   {BTspell(WA,6673)}, 		-- Battle Shout
+			{
+			   -- Pally Kings
+			   {BTspell(PA,25898)}, 		-- Greater Blessing of Kings
+			   {BTspell(PA,20217)}, 		-- Blessing of Kings
 			},
-			-- vars.Elixirs_Battle,
-			-- vars.Elixirs_Guardian,
-			-- {}, {},
+      {
+			   -- Pally Salv
+			   {BTspell(PA,25895)}, 	-- Greater Blessing of Salvation
+			   {BTspell(PA,1038)}, 		--  Blessing of Salvation
+			},
+      {
+			   -- Pally Other
+			   {BTspell(PA,27143)}, 		-- Greater Blessing of Wisdom
+			   {BTspell(PA,27142)}, 		-- Blessing of Wisdom
+			   {BTspell(PA,27141)}, 		-- Greater Blessing of Might
+			   {BTspell(PA,27140)}, 		-- Blessing of Might
+			   {BTspell(PA,20911)}, 		-- Greater Blessing of Sanctuary
+			   {BTspell(PA,25899)}, 		-- Blessing of Sanctuary
+			},
+      {},
+			vars.Elixirs_Battle,
+			vars.Elixirs_Guardian,
 			vars.Flasks,
-      		vars.Foodbuffs,
-			vars.AugmentRunes,
-			vars.VantusRunes,
+      vars.Foodbuffs,
 		},
 		header={
+      STAT_MARK,      -- "Mark of the Wild"
 			STAT_STAMINA, 	-- "Stamina"
 			STAT_INTELLECT, -- "Intellect"
-			STAT_STR_AGI, 	-- "Str/Agi";
-			-- {}, {},
-			-- {headerColor(L["Battle Elixirs"]),   select(2,spellData(60344))},
-			-- {headerColor(L["Guardian Elixirs"]), select(2,spellData(54494))},
-			{headerColor(L["Flasks"]),           select(2,spellData(67019))},
-			{headerColor(spellData(62349)),      select(2,spellData(62349))},
-			{headerColor(L["Augment Runes"]),    select(2,spellData(175457))},
-			{headerColor(L["Vantus Rune"]),      select(2,spellData(191464))},
+			STAT_KINGS, 	-- "Str/Agi"
+      STAT_SALV,
+      {headerColor(L["Other Pally Buff"]),   select(2,spellData(20911))},
+			 {},
+			{headerColor(L["Battle Elixirs"]),   select(2,spellData(28497))},
+			{headerColor(L["Guardian Elixirs"]), select(2,spellData(39625))},
+			{headerColor(L["Flasks"]),           select(2,spellData(28518))},
+			{headerColor(spellData(33263)),      select(2,spellData(33263))},
 		}
 	},
 }
@@ -365,7 +379,7 @@ function BuffWindow_Functions:CreateBuffRow(parent, xoffset, yoffset)
 		Row.Buff[i]:SetScript("OnEnter", BuffWindow_Functions.OnEnterBuff)
 		Row.Buff[i]:SetScript("OnLeave", BuffWindow_Functions.OnLeaveBuff)
 		Row.Buff[i]:EnableMouse(true)
-		
+
 		Row.Buff[i].ID = nil
         Row.Buff[i].remTime = 0
 
@@ -496,8 +510,7 @@ function BigBrother:ToggleBuffWindow()
 end
 
 function BigBrother:CreateBuffWindow()
-	local BuffWindow = CreateFrame("FRAME","BigBrother_BuffWindow",UIParent)
-
+	local BuffWindow = CreateFrame("FRAME","BigBrother_BuffWindow",UIParent, BackdropTemplateMixin and "BackdropTemplate");
 	BuffWindow:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
                                             edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
                                             tile = true, tileSize = 16, edgeSize = 16,
@@ -833,4 +846,3 @@ function BuffWindow_ResizeWindow()
 
 	BigBrother.db.profile.BuffWindow_height = BigBrother_BuffWindow:GetHeight();
 end
-
