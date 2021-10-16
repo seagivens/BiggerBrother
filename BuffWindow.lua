@@ -247,7 +247,7 @@ local BigBrother_BuffTable={
 			STAT_INTELLECT, -- "Intellect"
 			STAT_KINGS, 	-- "Str/Agi"
       STAT_SALV,
-      STAT_WIS,
+      {headerColor(L["Other Pally Buff"]),   select(2,spellData(20911))},
 			 {},
 			{headerColor(L["Battle Elixirs"]),   select(2,spellData(28497))},
 			{headerColor(L["Guardian Elixirs"]), select(2,spellData(39625))},
