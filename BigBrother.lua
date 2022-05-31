@@ -34,9 +34,9 @@ local bit, math, date, string, select, table, time, tonumber, unpack, wipe, pair
 bit, math, date, string, select, table, time, tonumber, unpack, wipe, pairs, ipairs
 
 local IsInInstance, UnitName, UnitBuff, UnitExists, UnitGUID, GetSpellLink, GetUnitName, GetPlayerInfoByGUID, GetRealZoneText,
-GetNumGroupMembers, IsInGuild, GetTime, UnitGroupRolesAssigned, GetPartyAssignment =
+GetNumGroupMembers, IsInGuild, GetTime, GetPartyAssignment =
 IsInInstance, UnitName, UnitBuff, UnitExists, UnitGUID, GetSpellLink, GetUnitName, GetPlayerInfoByGUID, GetRealZoneText,
-GetNumGroupMembers, IsInGuild, GetTime, UnitGroupRolesAssigned, GetPartyAssignment
+GetNumGroupMembers, IsInGuild, GetTime, GetPartyAssignment
 
 local COMBATLOG_OBJECT_RAIDTARGET_MASK, COMBATLOG_OBJECT_TYPE_PLAYER, COMBATLOG_OBJECT_TYPE_NPC, COMBATLOG_OBJECT_TYPE_PET,
 COMBATLOG_OBJECT_TYPE_GUARDIAN, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_REACTION_HOSTILE, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER =
@@ -222,14 +222,6 @@ local options = {
                     disabled = function() return not IsInRaid() end,
                     passValue = "RAID",
                 },
-                instance = {
-                    name = L["Instance"],
-                    desc = L["Reports result to LFG/LFR instance group."],
-                    type = 'execute',
-                    func = "QuickCheck",
-                    disabled = function() return not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) end,
-                    passValue = "INSTANCE_CHAT",
-                },
                 guild = {
                     name = L["Guild"],
                     desc = L["Reports result to guild chat."],
@@ -413,14 +405,6 @@ local options = {
                             set = function(v) addon.db.profile.PolyOut[7] = v end,
                             map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
                         },
-                        instance = {
-                            name = L["Instance"],
-                            desc = L["Reports result to LFG/LFR instance group."],
-                            type = 'toggle',
-                            get = function() return addon.db.profile.PolyOut[8] end,
-                            set = function(v) addon.db.profile.PolyOut[8] = v end,
-                            map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-                        },
                     }
                 },
                 checks = {
@@ -467,14 +451,6 @@ local options = {
                     desc = L["Perform a quickcheck automatically on ready check"],
                     type = 'group',
                     args = {
-                        ignorelfg = {
-                            name = L["Ignore Ready checks in LFG/LFR"],
-                            desc = L["Ignore Ready checks in LFG/LFR"],
-                            type = 'toggle',
-                            get = function() return addon.db.profile.ReadyCheckIgnoreLFG end,
-                            set = function(v) addon.db.profile.ReadyCheckIgnoreLFG = v end,
-                            map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-                        },
                         fromself = {
                             name = L["Ready checks from self"],
                             desc = L["Ready checks from self"],
@@ -1023,28 +999,28 @@ local function nospace(str)
     return str:gsub("%s", "")
 end
 
-function addon:IsTank(name)
-    if not name then return nil end
-    if tankcnt == 0 then
-        RL:ScanFullRoster()
-        for unit in RL:IterateRoster(false) do
-            if GetPartyAssignment("MAINTANK", unit.unitid) or
-            UnitGroupRolesAssigned(unit.unitid) == "TANK" then
-                tanklist[nospace(unit.name)] = true -- bare name
-                tanklist[nospace(unit.unitid)] = true -- bare name
-                tanklist[nospace(GetUnitName(unit.unitid, false))] = true
-                tanklist[nospace(GetUnitName(unit.unitid, true))] = true -- with server name
-                tankcnt = tankcnt + 1
-                --print("detected tank: "..unit.name)
-            end
-        end
-    end
-    local retval = tanklist[nospace(name)] or tanklist[nospace(GetUnitName(name, true))]
-    if BigBrother.debug then
-        print("IsTank('"..name.."') => "..(retval and "true" or "false").." "..(tankcnt > 0))
-    end
-    return retval, tankcnt > 0
-end
+-- function addon:IsTank(name)
+--     if not name then return nil end
+--     if tankcnt == 0 then
+--         RL:ScanFullRoster()
+--         for unit in RL:IterateRoster(false) do
+--             if GetPartyAssignment("MAINTANK", unit.unitid) or
+--             UnitGroupRolesAssigned(unit.unitid) == "TANK" then
+--                 tanklist[nospace(unit.name)] = true -- bare name
+--                 tanklist[nospace(unit.unitid)] = true -- bare name
+--                 tanklist[nospace(GetUnitName(unit.unitid, false))] = true
+--                 tanklist[nospace(GetUnitName(unit.unitid, true))] = true -- with server name
+--                 tankcnt = tankcnt + 1
+--                 --print("detected tank: "..unit.name)
+--             end
+--         end
+--     end
+--     local retval = tanklist[nospace(name)] or tanklist[nospace(GetUnitName(name, true))]
+--     if BigBrother.debug then
+--         print("IsTank('"..name.."') => "..(retval and "true" or "false").." "..(tankcnt > 0))
+--     end
+--     return retval, tankcnt > 0
+-- end
 function addon:clearTankList()
     --print("Wiping "..tankcnt.." tanks")
     wipe(tanklist)
@@ -1209,15 +1185,15 @@ local function sendspam(spam, channels, tankunit)
     local channels = channels or addon.db.profile.PolyOut
     if not spam then return end
 
-    if tankunit then
-        local istank, havetanks = addon:IsTank(tankunit)
-        if istank and not addon.db.profile.ReportTanks then
-            return
-        end
-        if not istank and havetanks and addon.db.profile.ReportTanks then
-            spam = EMBEGIN..spam..EMEND
-        end
-    end
+    -- if tankunit then
+    --     local istank, havetanks = addon:IsTank(tankunit)
+    --     if istank and not addon.db.profile.ReportTanks then
+    --         return
+    --     end
+    --     if not istank and havetanks and addon.db.profile.ReportTanks then
+    --         spam = EMBEGIN..spam..EMEND
+    --     end
+    -- end
 
     if channels[1] then
         local output = SYMDECODE(spam, false)
@@ -1476,8 +1452,7 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED()
 
         ccinfo.dmgspellamt[dstGUID] = ccinfo.dmgspellamt[dstGUID] or 0
         if (ccinfo.dmgspellamt[dstGUID] == 0 and new_dmgspellamt > 0) or -- first direct dmg
-        (new_dmgspellamt > 0 and -- newer direct dmg overwrites older direct dmg, except
-        not (addon:IsTank(ccinfo.dmgunitname[dstGUID]) and not addon:IsTank(srcname))) -- non-tanks dont overwrite tanks
+        new_dmgspellamt > 0
         then
             ccinfo.dmgspellid[dstGUID] = new_dmgspellid
             ccinfo.dmgspellamt[dstGUID] = new_dmgspellamt
@@ -1585,8 +1560,10 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED()
 
              if subevent == "SPELL_AURA_BROKEN" then
                  spam = (L["%s on %s broken by %s"]):format(SPELL(spellID), DST, SRC)
+                 print("SPELL_AURA_BROKEN triggered")
              elseif subevent == "SPELL_AURA_BROKEN_SPELL" then
                  spam = (L["%s on %s broken by %s's %s"]):format(SPELL(spellID), DST, SRC, SPELL(extraspellID))
+                 print("SPELL_AURA_BROKEN_SPELL triggered")
              elseif expired then
                  spam = (L["%s on %s expired"]):format(SPELL(spellID), DST)
              elseif subevent == "SPELL_AURA_REMOVED" then
